@@ -1,8 +1,8 @@
 #!/bin/sh
 
 #########################################################################
-# Scrape Yahoo! - Generates a list of Yahoo! Outbound IPs for Postwhite #
-# https://github.com/stevejenkins/postwhite                             #
+# Scrape Yahoo! - Generates a list of Yahoo! Outbound IPs for Postallow #
+# https://github.com/stevejenkins/postallow                             #
 #########################################################################
 
 # By Steve Cook (https://www.stevecook.net/)
@@ -26,7 +26,7 @@ printf "Scraping Yahoo! outbound IP addresses...\n"
 if [ -n "$1" ]; then
         config_file="$1"
 else
-        config_file="/etc/postwhite.conf"
+        config_file="/etc/postallow.conf"
 fi
 
 # Read config file options   

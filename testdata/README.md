@@ -1,6 +1,6 @@
 This testdata directory contains the following files:
 
-* **unsorted.txt** - an example of "raw" output from Postwhite that has not been sorted or uniqued
+* **unsorted.txt** - an example of "raw" output from Postallow that has not been sorted or uniqued
 
 * **sort-n.txt** - original data sorted using ```sort -n```
 
@@ -16,10 +16,10 @@ This testdata directory contains the following files:
 
 * **sort-tkn.txt** - original data sorted using ```sort -t. -k1,1n -k2,2n -k3,3n -k4,4n```
 
-* **sort-tkn-uniq.txt** - output of ```uniq sort-tkn.txt```. This is Postwhite's current approach to sorting and unique-ing as of v1.16.
+* **sort-tkn-uniq.txt** - output of ```uniq sort-tkn.txt```. This is Postallow's current approach to sorting and unique-ing as of v1.16.
 
-Note that only the data sorted with ```-u``` and ```-u -V``` resulted in unique rules without any data loss. All other unique sorts combining ```-u``` with ```-n-```  resulted in valid whitelist rules being removed from the unsorted data.
+Note that only the data sorted with ```-u``` and ```-u -V``` resulted in unique rules without any data loss. All other unique sorts combining ```-u``` with ```-n-```  resulted in valid allowlist rules being removed from the unsorted data.
 
-Using ```sort -V``` would be ideal, but the ```-V``` sort option is not available on all platforms, so I did not include it as the default option in Postwhite.
+Using ```sort -V``` would be ideal, but the ```-V``` sort option is not available on all platforms, so I did not include it as the default option in Postallow.
 
 Please feel free to experiment with this data, and if you have a suggestion for a better sort option, I'm all ears! :)

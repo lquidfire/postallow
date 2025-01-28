@@ -1,9 +1,9 @@
 #!/bin/sh
 
 ###########################################################################
-# Query Mailer - Generates a Postscreen whitelist for a mailhost that     #
+# Query Mailer - Generates a Postscreen allowlist for a mailhost that     #
 # doesn't publish their outbound mailer IPs via SPF records               #
-# https://github.com/stevejenkins/postwhite                               #
+# https://github.com/stevejenkins/postallow                               #
 ###########################################################################
 
 # By Jesse Norell (https://github.com/jnorell)
@@ -13,7 +13,7 @@ version="1.1"
 lastupdated="16 April 2018"
 
 temp_file="/tmp/ovh_hosts.txt"
-whitelist_file="/etc/postfix/postscreen_ovh_whitelist.cidr"
+allowlist_file="/etc/postfix/postscreen_ovh_allowlist.cidr"
         
 ###########################################################################
         
@@ -23,7 +23,7 @@ whitelist_file="/etc/postfix/postscreen_ovh_whitelist.cidr"
 
 # 1. Copy this script to a new unique filename
 # 2. Edit the script's mailhost and numerical range values as required
-# 3. Set a unique output file (/etc/postfix/postscreen_*_whitelist.cidr)
+# 3. Set a unique output file (/etc/postfix/postscreen_*_allowlist.cidr)
 # 4. Configure cron to run the new script as often as you like
 # 5. Include the output file in Postfix's postscreen_access_list parameter
 
@@ -44,9 +44,9 @@ done > $temp_file
 
 # Format queried hosts
 
-printf "Formatting custom whitelist...\n"
+printf "Formatting custom allowlist...\n"
 
-grep 'has address' /tmp/ovh_hosts.txt | awk '{print $4 " permit"}' | sort -uV  > $whitelist_file
+grep 'has address' /tmp/ovh_hosts.txt | awk '{print $4 " permit"}' | sort -uV  > $allowlist_file
 
 # Restart Postfix
 
