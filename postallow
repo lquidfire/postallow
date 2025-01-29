@@ -3,20 +3,23 @@
 ###################################################################
 # Postallow - Automatic Postcreen Whitelist / Blacklist Generator #
 # https://github.com/stevejenkins/postallow                       #
-# By Steve Jenkins (https://www.stevejenkins.com/)                #
+# Originally by Steve Jenkins (https://www.stevejenkins.com/)     #
+# Renamed and updated in 2025 by Edmund Lodewijks                 #
 ###################################################################
 
-version="3.4"
-lastupdated="14 April 2018"
+version="3.5"
+lastupdated="29 January 2025"
 
-# Usage: 1) Place entire /postallow directory in /usr/local/bin
-#	 2) Move postallow.conf to /etc
-#	 3) Run ./postallow [config-file]
+# Usage: 1) Place entire /postallow directory in /usr/local/scripts
+#	 2) Move (and modify, if needed) postallow.conf to /etc
+#	 3) Run /usr/local/scripts/postallow
 # Optional config file passed via command line overrides the default config file location.
 #
-# Requires SPF-Tools (https://github.com/jsarenik/spf-tools)
+# Requires SPF-Tools (https://github.com/lquidfire/spf-tools)
 # Please update your copy of spf-tools whenever you update Postallow
 #
+# Thanks to Steve Jenkins (https://www.stevejenkins.com/) for the orignal version
+#           (called Postwhite).
 # Thanks to Mike Miller (mmiller@mgm51.com) for gallowlist.sh script.
 # Thanks to Jan Sarenik for SPF-Tools.
 # Thanks to Jose Borges Ferreira for IPv4 normalization help.
@@ -40,16 +43,17 @@ webmail_hosts="aol.com fastmail.com google.com gmx.com hotmail.com icloud.com \
 	inbox.com mail.com microsoft.com outlook.com secure-mailgate.com zoho.com"
 
 social_hosts="facebook.com facebookmail.com instagram.com linkedin.com \
-	pinterest.com reddit.com tumblr.com twitter.com"
+	pinterest.com reddit.com tumblr.com tiktok.com x.com"
 
 commerce_hosts="amazon.com craigslist.org ebay.com paypal.com"
 
-bulk_hosts="amazonses.com authsmtp.com constantcontact.com \
+bulk_hosts="amazonses.com authsmtp.com brevo.com constantcontact.com \
 	cust-spf.exacttarget.com exacttarget.com fbmta.com fishbowl.com \
 	icontact.com mailchimp.com mailgun.com mailjet.com messagelabs.com \
-	messagegears.net sendgrid.com sendgrid.net sparkpost.com sparkpostmail.com"
+	messagegears.net mtasv.net sendgrid.com sendgrid.net sparkpost.com \
+	sparkpostmail.com"
 
-misc_hosts="github.com zendesk.com"
+misc_hosts="codeberg.org github.com gitlab.com sr.ht zendesk.com"
 
 permit_line_v4="%s\tpermit\n"
 reject_line_v4="%s\treject\n"
