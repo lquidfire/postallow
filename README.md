@@ -1,5 +1,3 @@
-[ ![Codeship Status for stevejenkins/postallow](https://app.codeship.com/projects/8cd4ff10-77b6-0133-22fe-02534086190b/status?branch=master)](https://app.codeship.com/projects/118483) [![Issue Count](https://codeclimate.com/github/stevejenkins/postallow/badges/issue_count.svg)](https://codeclimate.com/github/stevejenkins/postallow)
-
 # Postallow - Automatic Postcreen Whitelist & Blacklist Generator
 A script for generating a Postscreen allowlist (and optionally a blocklist) based on large and presumably trustworthy senders' SPF records.
 
