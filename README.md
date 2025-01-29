@@ -35,7 +35,7 @@ I recommend cloning both the SPF-Tools and the Postallow repos into your ```/usr
 
     @daily /usr/local/scipts/postallow/postallow > /dev/null 2>&1 #Update Postscreen Allowlists
 
-I also recommend updating the list of known Yahoo! IP outbound mailers weekly:
+It is still possible to update the list of known Yahoo! IP outbound mailers from their website weekly:
 
     @weekly /usr/local/scripts/postallow/scrape_yahoo > /dev/null 2>&1 #Update Yahoo! IPs for Postscreen Allowlists
 
@@ -59,9 +59,10 @@ Then do a manual ```postfix reload``` or re-run ```/usr/local/scripts/postallow`
 Options for Postallow are located in the ```postallow.conf``` file. This file shoud be moved to your system's ```/etc/``` directory before running Postallow for the first time.
 
 ## Custom Hosts
-By default, Postallow includes a number of well-known (and presumably trustworthy) mailers in five categories:
+By default, Postallow includes a number of well-known (and presumably trustworthy) mailers in six categories:
 
 * Webmailers
+* Yahoo Mail
 * Ecommerce
 * Social Networks
 * Bulk Senders
@@ -74,16 +75,20 @@ To add your own additional custom hosts, add them to the ```custom_hosts``` sect
 Additional trusted mailers are added to the script from time to time, so check back periodically for new versions, or "Watch" this repo to receive update notifications.
 
 ## Hosts that Don't Publish their Outbound Mailers via SPF Records
-Because Postallow relies on published SPF records to build its allowlist, mailers who refuse to publish outbound mailer IP addresses via SPF are problematic. The largest such host is Yahoo!, which is dealt with separately (see below). For smaller mailhosts without SPF-published mailer lists, the included `query_host_ovh` file is a working example of a script that queries a range of hostnames for a specific mailer (`mail-out.ovh.net` in the included example), collects valid IP addresses, and includes them in a custom allowlist. The new custom allowlist may then be included in as an additional entry in your Postfix's `postscreen_access_list` parameter (see **Usage** above). An example of the `query_host_ovh` file's output is included in the `/examples/` folder as `postscreen_ovh_allowlist.cidr`.
+Because Postallow relies on published SPF records to build its allowlist, mailers who refuse to publish outbound mailer IP addresses via SPF are problematic.
 
-To create additional customized query scripts for mailers that don't publish outbound IPs via SPF, copy the example `query_host_ovh` file to a new unique filename, edit the script's mailhost and numerical range values as required, set a unique output file (`/etc/postfix/postscreen_*_allowlist.cidr`), include the output file in Postfix's `postscreen_access_list` parameter, then configure cron to run the new query script periodically.
+For smaller mailhosts without SPF-published mailer lists, the included `query_host_ovh` file is a working example of a script that queries a range of hostnames for a specific mailer (`mail-out.ovh.net` in the included example), collects valid IP addresses, and includes them in a custom allowlist. The new custom allowlist may then be included in as an additional entry in your Postfix's `postscreen_access_list` parameter (see **Usage** above). An example of the `query_host_ovh` file's output is included in the `/examples/` folder as `postscreen_ovh_allowlist.cidr`.
+
+To create additional customised query scripts for mailers that don't publish outbound IPs via SPF, copy the example `query_host_ovh` file to a new unique filename, edit the script's mailhost and numerical range values as required, set a unique output file (`/etc/postfix/postscreen_*_allowlist.cidr`), include the output file in Postfix's `postscreen_access_list` parameter, then configure cron to run the new query script periodically.
 
 Depending on the size of the range you wish to query, this script could take a long time to complete. I recommend testing on a small fraction of the mailhost's range before pushing the script to a production environment.
 
 ## Yahoo! Hosts
-As mentioned in the **Known Issues**, Yahoo!'s SPF record doesn't support queries to expose their netblocks, and therefore a dynamic list of Yahoo mailers can't be built. However, Yahoo! does publish a list of outbound mailer IP addresses at [https://help.yahoo.com/kb/SLN23997.html](https://senders.yahooinc.com/outbound-mail-servers/) (checked on 2025-01-29).
+The netblocks for Yahoo! are only to be found on their own nameservers, and manual checking of the querying mechanism is required every now and then.
 
-A list of Yahoo! outbound IP addresses, based on the linked knowledgebase article and formatted for Postallow, is included as ```yahoo_static_hosts.txt```. By default, the contents of this file are added to the final allowlist. To disable the Yahoo! IPs from being included in your allowlist, set the ```include_yahoo``` configuration option in ```/etc/postallow.conf``` to ```include_yahoo="no"```.
+Yahoo also publishes a list of outbound IP addresses [on their website](https://senders.yahooinc.com/outbound-mail-servers/). However, that list does not correspond 100% to the IP addresses obtained from their SPF records via their own nameservers.. Therefore, Postallow offers both a dynamic list of Yahoo mailers, built from the records obtained from their Nameservers, as well as the option to scrape Yahoo's website and add those IP addresses as well.
+
+A list of Yahoo! outbound IP addresses, based on the linked knowledgebase article and formatted for Postallow, is included as ```yahoo_static_hosts.txt```. By default, the contents of this file are added to the final allowlist. To disable these particular Yahoo! IPs from being included in your allowlist, set the ```include_yahoo``` configuration option in ```/etc/postallow.conf``` to ```include_yahoo="no"```.
 
 The ```yahoo_static_hosts.txt``` file can be periodically updated by running the ```scrape_yahoo``` script, which requires either **Wget** or **cURL** (included on most systems). The ```scrape_yahoo``` script reads the Postallow config file for the location to write the updated list of Yahoo! oubound IP addresses. Run the ```scrape_yahoo``` script periodically via cron (I recommend no more than weekly) to automatically update the list of Yahoo! IPs used by Postallow.
 
@@ -116,8 +121,6 @@ A blog post by the original author discussing how Postallow came to be is here:
 http://www.stevejenkins.com/blog/2015/11/postscreen-allowlisting-smtp-outbound-ip-addresses-large-webmail-providers/
 
 # Known Issues
-* I'd love to include Yahoo's IPs in the allowlist via the same methods used for all other mails, but their SPF record doesn't support queries to expose their netblocks. The included ```scrape_yahoo``` script, which creates a static list of Yahoo! IPs by scraping their web page, is an acceptable work-around, but if you have a suggestion for a more elegant solution, please create an issue and let me know, or create a pull request.
-
 * I have no way of validating IPv6 CIDRs yet. For now, the script assumes all SPF-published IPv6 CIDRs are valid and includes them in the allowlist.
 
 * I've improved the sorting by doing the ```uniq``` separately, after the sort. ```sort -u -V``` is still ideal, but it the ```-V``` option doesn't exist on all platforms (OSX doesn't support it, for example). For now, I can live with the two-step ```sort``` and ```uniq```, even though the final output splits the IPv6 address into two grips: those that start with letters and numbers (2a00, 2a01, etc.) at the top, and those that start with numbers only (2001, 2004, etc.) at the bottom. All the IPv4 addresses in the middle are sorted properly. See the `/testdata/` folder for examples of different sorting attempts or to play around with your own attempts at sorting. If you have any suggestions to improve the sorting without losing any data, I'm all ears!
@@ -126,4 +129,4 @@ http://www.stevejenkins.com/blog/2015/11/postscreen-allowlisting-smtp-outbound-i
 If you're a Postfix admin who sees a good number of ```PASS OLD``` entries for Postscreen in your mail logs, and have a suggestion for an additional mail host that might be a good candidate to include in Postallow, please comment on this issue: https://github.com/stevejenkins/postallow/issues/2
 
 # Disclaimer
-You are totally responsible for anything this script does to your system. Whether it launches a nice game of Tic Tac Toe or global thermonuclear war, you're on your own. :)
+You are totally responsible for anything this script does to your system. You're on your own. :)
