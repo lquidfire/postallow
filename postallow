@@ -42,6 +42,9 @@ lastupdated="29 January 2025"
 webmail_hosts="aol.com fastmail.com google.com gmx.com hotmail.com icloud.com \
 	inbox.com mail.com microsoft.com outlook.com secure-mailgate.com zoho.com"
 
+# Yahoo hosts (as per 2025-01-29)
+yahoo_hosts="_spf1.yahoo.com _spf2.yahoo.com _spf3.yahoo.com"
+
 social_hosts="facebook.com facebookmail.com instagram.com linkedin.com \
 	pinterest.com reddit.com tumblr.com tiktok.com x.com"
 
