@@ -15,14 +15,14 @@ By default, Postallow has blocklisting turned off. Most users will not need to e
 
 # Requirements
 Postallow runs as a shell script (```/bin/sh```) and relies on two scripts from the <a target="_blank" 
-href="https://github.com/lquidfire/spf-tools">SPF-Tools</a> project (**despf.sh** and **simplify.sh**) to help recursively query SPF records. I recommend cloning or copying the entire SPF-Tools repo to a ```/usr/local/scripts/```directory on your system, then confirming the ```spftoolspath``` value in ```postallow```.
+href="https://github.com/spf-tools/spf-tools">SPF-Tools</a> project (**despf.sh** and **simplify.sh**) to help recursively query SPF records. I recommend cloning or copying the entire SPF-Tools repo to a ```/usr/local/scripts/```directory on your system, then confirming the ```spftoolspath``` value in ```postallow```.
 
 **Please update SPF-Tools whenever you update Postallow, as both are under continuous development, and sometimes new features of Postallow depend upon an updated version of SPF-Tools.**
 
 Postallow also assumes that you have **Postfix** and the appropriate **bind-utils** package for your Linux / Unix(-y) system installed on your system.
 
 # Usage
-1. Make sure you have <a target="_blank" href="https://github.com/lquidfire/spf-tools">SPF-Tools</a> on your system
+1. Make sure you have <a target="_blank" href="https://github.com/spf-tools/spf-tools">SPF-Tools</a> on your system
 2. Move the ```postallow.conf``` file to your `/etc/` directory
 3. Add any custom hosts in ```postallow.conf```
 4. Run ```/usr/local/scripts/postallow``` from the command line.
