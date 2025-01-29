@@ -166,6 +166,11 @@ query_block_host() {
 	"${spftoolspath}"/despf.sh "$1" | (grep -Ei ^ip || true ) >> "${blktmp1}"
 }
 
+# Create Yahoo query function that pulls their SPF records from their own Nameservers
+query_yahoo_host() {
+	"${spftoolspath}"/despf.sh -d ns1.yahoo.com "$1" | (grep -Ei ^ip || true ) >> "${tmp1}"
+}
+
 # Create progress dots function
 show_dots() {
 	while ps "$1" >/dev/null; do
@@ -225,6 +230,14 @@ printf "\nQuerying webmail hosts...\n"
 
 for h in ${webmail_hosts}; do
 	query_host "${h}"
+done
+
+# Query Yahoo
+
+printf "\nQuerying Yahoo hosts...\n"
+
+for h in ${yahoo_hosts}; do
+	query_yahoo_host "${h}"
 done
 
 printf "\nQuerying social network hosts...\n"
