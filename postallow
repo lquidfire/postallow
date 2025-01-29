@@ -39,6 +39,7 @@ lastupdated="29 January 2025"
 # CUSTOM HOSTS CAN BE ADDED IN /etc/postallow.conf
 
 # Hosts to query
+# Add ProtonMail, Tutanota, and other
 webmail_hosts="aol.com fastmail.com google.com gmx.com hotmail.com icloud.com \
 	inbox.com mail.com microsoft.com outlook.com secure-mailgate.com zoho.com"
 
