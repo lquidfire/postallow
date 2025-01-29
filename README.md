@@ -1,43 +1,43 @@
-# Postallow - Automatic Postcreen Whitelist & Blacklist Generator
+# Postallow - Automatic Postcreen Allowlist & Blocklist Generator
 A script for generating a Postscreen allowlist (and optionally a blocklist) based on large and presumably trustworthy senders' SPF records.
 
 # Why Postallow?
 Postallow uses the published SPF records from domains of known webmailers, social networks, ecommerce providers, and compliant bulk senders to generate a list of outbound mailer IP addresses and CIDR ranges to create a allowlist (and optionally a blocklist) for Postfix's Postscreen.
 
-This allows Postscreen to save time and resources by immediately handing off allowlisted connections from these hosts (which we can somewhat safely presume are properly configured) to Postfix's smtpd process for further action. Blacklisted hosts are rejected before they reach Postfix's smtpd process.
+This allows Postscreen to save time and resources by immediately handing off allowlisted connections from these hosts (which we can somewhat safely presume are properly configured) to Postfix's smtpd process for further action. Blocklisted hosts are rejected before they reach Postfix's smtpd process.
 
-Note this does *not* allowlist (or blocklist) email messages from any of these hosts. A allowlist for Postscreen (which is merely the first line of Postfix's defense) merely allows listed hosts to connect to Postfix without further tests to prove they are properly configured and/or legitimate senders. A Postscreen blocklist does nothing but reject the connection based on the blocklisted host's IP.
+Note this does *not* allowlist (or blocklist) email messages from any of these hosts. An allowlist for Postscreen (which is merely the first line of Postfix's defense) merely allows listed hosts to connect to Postfix without further tests to prove they are properly configured and/or legitimate senders. A Postscreen blocklist does nothing but reject the connection based on the blocklisted host's IP.
 
-If all of the allowlist mailers are selected when Postallow runs, the resulting allowlist includes over 500 outbound mail servers, all of which  have a very high probability of being properly configured.
+If all of the allowlist mailers are selected when Postallow runs, the resulting allowlist includes over 500 outbound mail servers, all of which have a very high probability of being properly configured.
 
-# Warning about Blacklisting
+# Warning about Blocklisting
 By default, Postallow has blocklisting turned off. Most users will not need to ever turn it on, but it's there if you *really* believe you need it. If you choose to enable it, make sure you understand the implications of blocklisting IP addresses based on their hostnames and associated mailers, and re-run Postallow often via cron to make sure you're not inadvertently blocking legitimate senders.
 
 # Requirements
 Postallow runs as a shell script (```/bin/sh```) and relies on two scripts from the <a target="_blank" 
-href="https://github.com/jsarenik/spf-tools">SPF-Tools</a> project (**despf.sh** and **simplify.sh**) to help recursively query SPF records. I recommend cloning or copying the entire SPF-Tools repo to ```/usr/local/bin/```directory on your system, then confirming the ```spftoolspath``` value in ```postallow```.
+href="https://github.com/lquidfire/spf-tools">SPF-Tools</a> project (**despf.sh** and **simplify.sh**) to help recursively query SPF records. I recommend cloning or copying the entire SPF-Tools repo to a ```/usr/local/scripts/```directory on your system, then confirming the ```spftoolspath``` value in ```postallow```.
 
 **Please update SPF-Tools whenever you update Postallow, as both are under continuous development, and sometimes new features of Postallow depend upon an updated version of SPF-Tools.**
 
-Postallow also assumes that you have **Postfix** and the appropriate **bind-utils** package for your Linux distro installed on your system.
+Postallow also assumes that you have **Postfix** and the appropriate **bind-utils** package for your Linux / Unix(-y) system installed on your system.
 
 # Usage
-1. Make sure you have <a target="_blank" href="https://github.com/jsarenik/spf-tools">SPF-Tools</a> on your system
+1. Make sure you have <a target="_blank" href="https://github.com/lquidfire/spf-tools">SPF-Tools</a> on your system
 2. Move the ```postallow.conf``` file to your `/etc/` directory
 3. Add any custom hosts in ```postallow.conf```
-4. Run ```./postallow``` from the command line.
+4. Run ```/usr/local/scripts/postallow``` from the command line.
 
 You can optionally provide a configuration file via the command line which will override the default configuration file:
 
-    ./postallow /path/to/config-file
+    /usr/local/scripts/postallow /path/to/config-file
 
-I recommend cloning both the SPF-Tools and the Postallow repos into your ```/usr/local/bin/``` directory. Once you're satisfied with its performance, set a daily cron job to pick up any new hosts in the mailers' SPF records like this:
+I recommend cloning both the SPF-Tools and the Postallow repos into your ```/usr/local/scripts/``` directory. Once you're satisfied with its performance, set a daily cron job to pick up any new hosts in the mailers' SPF records like this:
 
-    @daily /usr/local/bin/postallow/postallow > /dev/null 2>&1 #Update Postscreen Whitelists
+    @daily /usr/local/scipts/postallow/postallow > /dev/null 2>&1 #Update Postscreen Allowlists
 
 I also recommend updating the list of known Yahoo! IP outbound mailers weekly:
 
-    @weekly /usr/local/bin/postallow/scrape_yahoo > /dev/null 2>&1 #Update Yahoo! IPs for Postscreen Whitelists
+    @weekly /usr/local/scripts/postallow/scrape_yahoo > /dev/null 2>&1 #Update Yahoo! IPs for Postscreen Allowlists
 
 *(Please read more about Yahoo! hosts below)*
 
@@ -53,7 +53,7 @@ Add the filename of your allowlist (and optionally your blocklist) to the ```pos
 
 **IMPORTANT:** If you choose to enable blocklisting, list the blocklist file *after* the allowlist file in ```main.cf```, as shown above. If you misconfigure Postallow and an IP address inadvertently finds its way onto both lists, the first entry "wins." Listing the allowlist file first in ```main.cf``` will assure that allowlisted hosts aren't blocklisted, even if they appear in the blocklist file. 
 
-Then do a manual ```postfix reload``` or re-run ```./postallow``` to build a fresh allowlist and automatically reload Postfix.
+Then do a manual ```postfix reload``` or re-run ```/usr/local/scripts/postallow``` to build a fresh allowlist and automatically reload Postfix.
 
 # Options
 Options for Postallow are located in the ```postallow.conf``` file. This file shoud be moved to your system's ```/etc/``` directory before running Postallow for the first time.
@@ -81,14 +81,14 @@ To create additional customized query scripts for mailers that don't publish out
 Depending on the size of the range you wish to query, this script could take a long time to complete. I recommend testing on a small fraction of the mailhost's range before pushing the script to a production environment.
 
 ## Yahoo! Hosts
-As mentioned in the **Known Issues**, Yahoo!'s SPF record doesn't support queries to expose their netblocks, and therefore a dynamic list of Yahoo mailers can't be built. However, Yahoo! does publish a list of outbound mailer IP addresses at https://help.yahoo.com/kb/SLN23997.html.
+As mentioned in the **Known Issues**, Yahoo!'s SPF record doesn't support queries to expose their netblocks, and therefore a dynamic list of Yahoo mailers can't be built. However, Yahoo! does publish a list of outbound mailer IP addresses at [https://help.yahoo.com/kb/SLN23997.html](https://senders.yahooinc.com/outbound-mail-servers/) (checked on 2025-01-29).
 
 A list of Yahoo! outbound IP addresses, based on the linked knowledgebase article and formatted for Postallow, is included as ```yahoo_static_hosts.txt```. By default, the contents of this file are added to the final allowlist. To disable the Yahoo! IPs from being included in your allowlist, set the ```include_yahoo``` configuration option in ```/etc/postallow.conf``` to ```include_yahoo="no"```.
 
 The ```yahoo_static_hosts.txt``` file can be periodically updated by running the ```scrape_yahoo``` script, which requires either **Wget** or **cURL** (included on most systems). The ```scrape_yahoo``` script reads the Postallow config file for the location to write the updated list of Yahoo! oubound IP addresses. Run the ```scrape_yahoo``` script periodically via cron (I recommend no more than weekly) to automatically update the list of Yahoo! IPs used by Postallow.
 
-## Blacklisting
-To enable blocklisting, set ```enable_blocklist=yes``` and then list blocklisted hosts in ```blocklist_hosts```. Please refer to the blocklisting warning above. Blacklisting is not the primary purpose of Postallow, and most users will never need to turn it on.
+## Blocklisting
+To enable blocklisting, set ```enable_blocklist=yes``` and then list blocklisted hosts in ```blocklist_hosts```. Please refer to the blocklisting warning above. Blocklisting is not the primary purpose of Postallow, and most users will never need to turn it on.
 
 ## Simplify
 By default, the option to simplify (remove) invididual IP addresses that are already included in CIDR ranges (handled by the SPT-Tools ```simplify.sh``` script) is set to **no**. Turning this feature on when building a allowlist for more than just a few mailers *dramatically* adds to the processing time required to run Postallow. Feel free to turn it on to see how it affects the amount of time required to build your allowlist, but if you're allowlisting more than just 3 or 4 mailers, you'll probably want to turn it to "no" again. Having a handful of individual IP addresses in your allowlist that might be redundantly covered by CIDR ranges won't have any appreciable impact on Postscreen's performance.
@@ -97,7 +97,7 @@ By default, the option to simplify (remove) invididual IP addresses that are alr
 You can also choose how to handle malformed or invalid CIDR ranges that appear in the mailers' SPF records (which happens more often than it should). The options are:
 
 * **remove** - the default action, it removes the invalid CIDR range so it doesn't appear in the allowlist.
-* **keep** - this keeps the invalid CIDR range in the allowlist. Postfix will log a warning about ```non-null host address bits```, suggest the closest valid range with a matching prefix length, and harmlessly ignore the rule. Useful only if you want to see which mailers are less than careful about their SPF records (cough, cough, *Microsoft*, cough, cough).
+* **keep** - this keeps the invalid CIDR range in the allowlist. Postfix will log a warning about ```non-null host address bits```, suggest the closest valid range with a matching prefix length, and harmlessly ignore the rule. Useful only if you want to see which mailers are less than careful about their SPF records.
 * **fix** - this option will change the invalid CIDR to the closest valid range (the same one suggested by Postfix, in fact) and include the corrected CIDR range in the allowlist.
 
 Other options in ```postallow.conf``` include changing the filenames for your allowlist & blocklist, Postfix path, SPF-Tools path, and whether or not to automatically reload Postfix after you've generated a new list.
@@ -111,7 +111,7 @@ Other options in ```postallow.conf``` include changing the filenames for your al
 * Thanks to all the generous [contributors](https://github.com/stevejenkins/postallow/graphs/contributors) right here on GitHub who have helped move the project along!
 
 # More Info
-My blog post discussing how Postallow came to be is here:
+A blog post by the original author discussing how Postallow came to be is here:
 
 http://www.stevejenkins.com/blog/2015/11/postscreen-allowlisting-smtp-outbound-ip-addresses-large-webmail-providers/
 
