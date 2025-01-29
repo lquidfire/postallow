@@ -7,11 +7,12 @@
 
 # By Steve Cook (https://www.stevecook.net/)
 # and Steve Jenkins (https://www.stevejenkins.com/)
+# Updated in 2025 by Edmund Lodewijks
 
-version="1.0"
-lastupdated="30 April 2017"
+version="1.1"
+lastupdated="29 January 2025"
 
-yahoo_url="https://help.yahoo.com/kb/SLN23997.html"
+yahoo_url="https://senders.yahooinc.com/outbound-mail-servers/"
 
 # NO NEED TO EDIT PAST THIS LINE
 
