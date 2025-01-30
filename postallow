@@ -411,7 +411,7 @@ cleanup
 # Reload Postfix to pick up changes in allowlist
 if [ x"$reload_postfix" = x"yes" ]; then
 printf '\nReloading Postfix configuration to refresh rules...\n'
-	${postfixbinarypath}/postfix reload
+	sudo ${postfixbinarypath}/postfix reload
 fi
 
 printf '\nDone!\n'
