@@ -74,7 +74,6 @@ printf "Starting Postallow v$version ($lastupdated)\n"
 #config_file="/etc/postallow.conf"
 if [ -n "$1" ]; then
 	config_file="$1"
-fi
 elif [ -f "/etc/postallow.conf" ]; then
     config_file="/etc/postallow.conf"
 elif [ -f "/etc/postallow/postallow.conf" ]; then
