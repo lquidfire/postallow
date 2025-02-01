@@ -7,8 +7,8 @@
 # Renamed and updated in 2025 by Edmund Lodewijks                 #
 ###################################################################
 
-version="3.6"
-lastupdated="29 January 2025"
+version="3.7"
+lastupdated="1 February 2025"
 
 # Usage: 1) Place entire /postallow directory in /usr/local/scripts
 #	 2) Move (and modify, if needed) postallow.conf to /etc
@@ -39,9 +39,9 @@ lastupdated="29 January 2025"
 # CUSTOM HOSTS CAN BE ADDED IN /etc/postallow.conf
 
 # Hosts to query
-# Add ProtonMail, Tutanota, and other
 webmail_hosts="aol.com fastmail.com google.com gmx.com hotmail.com icloud.com \
-	inbox.com mail.com microsoft.com outlook.com secure-mailgate.com zoho.com"
+	inbox.com mail.com microsoft.com outlook.com protonmail.com \
+	secure-mailgate.com tutanota.com zoho.com"
 
 # Yahoo hosts (as per 2025-01-29)
 yahoo_hosts="_spf1.yahoo.com _spf2.yahoo.com _spf3.yahoo.com"
