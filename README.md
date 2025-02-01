@@ -23,46 +23,6 @@ Postallow also assumes that you have **Postfix** and the appropriate **bind-util
 
 # Usage
 
-## Non-root user (Recommended)
-
-1. Make sure you have <a target="_blank" href="https://github.com/spf-tools/spf-tools">SPF-Tools</a> on your system
-2. Create a system group: `groupadd -r postallow`
-3. Create a system user: `useradd -g postallow -M -r -s /usr/sbin/nologin postallow`
-4. Create a directory for postallow in /etc: `mkdir /etc/postallow && chgrp postallow /etc/postallow && chmod g+w /etc/postallow`
-5. Move the ```postallow.conf``` file to your `/etc/postallow` directory
-6. Change the group of the `yahoo_static_hosts` file to `postallow` (or move it into the the /etc/postallow directory).
-7. Use `visudo` to add the following line to your sudo config: `postallow ALL=(ALL) NOPASSWD: /usr/sbin/postfix reload`
-8. Add any custom hosts in ```postallow.conf```
-9. Run ```/usr/local/scripts/postallow``` from the command line.
-
-You can optionally provide a configuration file via the command line which will override the default configuration file:
-
-    /usr/local/scripts/postallow /path/to/config-file
-
-I recommend cloning both the SPF-Tools and the Postallow repos into your ```/usr/local/scripts/``` directory. Once you're satisfied with its performance, set a daily cron job to pick up any new hosts in the mailers' SPF records like this:
-
-    @daily postallow /usr/local/scipts/postallow/postallow > /dev/null 2>&1 #Update Postscreen Allowlists
-
-It is still possible to update the list of known Yahoo! IP outbound mailers from their website weekly:
-
-    @weekly postallow /usr/local/scripts/postallow/scrape_yahoo > /dev/null 2>&1 #Update Yahoo! IPs for Postscreen Allowlists
-
-*(Please read more about Yahoo! hosts below)*
-
-When executed, Postallow will generate a file named ```postscreen_spf_allowlist.cidr```, write it to your Postfix directory, then reload Postfix to pick up any changes.
-
-Add the filename of your allowlist (and optionally your blocklist) to the ```postscreen_access_list``` option in your Postfix ```main.cf``` file, like this:
-
-    postscreen_access_list = permit_mynetworks,
-    ...
-            cidr:/etc/postfix/postscreen_spf_allowlist.cidr,
-            cidr:/etc/postfix/postscreen_spf_blocklist.cidr,
-    ...
-
-**IMPORTANT:** If you choose to enable blocklisting, list the blocklist file *after* the allowlist file in ```main.cf```, as shown above. If you misconfigure Postallow and an IP address inadvertently finds its way onto both lists, the first entry "wins." Listing the allowlist file first in ```main.cf``` will assure that allowlisted hosts aren't blocklisted, even if they appear in the blocklist file. 
-
-Then do a manual ```postfix reload``` or re-run ```/usr/local/scripts/postallow``` to build a fresh allowlist and automatically reload Postfix.
-
 ## As root
 
 1. Make sure you have <a target="_blank" href="https://github.com/spf-tools/spf-tools">SPF-Tools</a> on your system
@@ -81,6 +41,47 @@ I recommend cloning both the SPF-Tools and the Postallow repos into your ```/usr
 It is still possible to update the list of known Yahoo! IP outbound mailers from their website weekly:
 
     @weekly /usr/local/scripts/postallow/scrape_yahoo > /dev/null 2>&1 #Update Yahoo! IPs for Postscreen Allowlists
+
+*(Please read more about Yahoo! hosts below)*
+
+When executed, Postallow will generate a file named ```postscreen_spf_allowlist.cidr```, write it to your Postfix directory, then reload Postfix to pick up any changes.
+
+Add the filename of your allowlist (and optionally your blocklist) to the ```postscreen_access_list``` option in your Postfix ```main.cf``` file, like this:
+
+    postscreen_access_list = permit_mynetworks,
+    ...
+            cidr:/etc/postfix/postscreen_spf_allowlist.cidr,
+            cidr:/etc/postfix/postscreen_spf_blocklist.cidr,
+    ...
+
+**IMPORTANT:** If you choose to enable blocklisting, list the blocklist file *after* the allowlist file in ```main.cf```, as shown above. If you misconfigure Postallow and an IP address inadvertently finds its way onto both lists, the first entry "wins." Listing the allowlist file first in ```main.cf``` will assure that allowlisted hosts aren't blocklisted, even if they appear in the blocklist file. 
+
+Then do a manual ```postfix reload``` or re-run ```/usr/local/scripts/postallow``` to build a fresh allowlist and automatically reload Postfix.
+
+## Alternative: Non-root user
+
+1. Make sure you have <a target="_blank" href="https://github.com/spf-tools/spf-tools">SPF-Tools</a> on your system
+2. Create a system group: `groupadd -r postallow`
+3. Create a system user: `useradd -g postallow -M -r -s /usr/sbin/nologin postallow`
+4. Create a directory for postallow in /etc: `mkdir /etc/postallow && chgrp postallow /etc/postallow && chmod g+w /etc/postallow`
+5. Move the ```postallow.conf``` file to your `/etc/postallow` directory
+6. Change the group of the `yahoo_static_hosts` file to `postallow` (or move it into the the /etc/postallow directory).
+7. Use `visudo` to add the following line to your sudo config: `postallow ALL=(ALL) NOPASSWD: /usr/sbin/postfix reload`
+8. Add any custom hosts in ```postallow.conf```
+9. Run ```/usr/local/scripts/postallow``` from the command line.
+10. Copy the generated file(s) `postscreen_spf_allowlist.cidr` (and `postscreen_spf_blocklist.cidr`) to `/etc/postfix/` (or create a symlink).
+
+You can optionally provide a configuration file via the command line which will override the default configuration file:
+
+    /usr/local/scripts/postallow /path/to/config-file
+
+I recommend cloning both the SPF-Tools and the Postallow repos into your ```/usr/local/scripts/``` directory. Once you're satisfied with its performance, set a daily cron job to pick up any new hosts in the mailers' SPF records like this:
+
+    @daily postallow /usr/local/scipts/postallow/postallow > /dev/null 2>&1 #Update Postscreen Allowlists
+
+It is still possible to update the list of known Yahoo! IP outbound mailers from their website weekly:
+
+    @weekly postallow /usr/local/scripts/postallow/scrape_yahoo > /dev/null 2>&1 #Update Yahoo! IPs for Postscreen Allowlists
 
 *(Please read more about Yahoo! hosts below)*
 
