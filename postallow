@@ -18,6 +18,7 @@ lastupdated="1 February 2025"
 # Requires SPF-Tools (https://github.com/lquidfire/spf-tools)
 # Please update your copy of spf-tools whenever you update Postallow
 #
+# Thanks to `nabbi` for Perl CIDR integration.
 # Thanks to Steve Jenkins (https://www.stevejenkins.com/) for the orignal version
 #           (called Postwhite).
 # Thanks to Mike Miller (mmiller@mgm51.com) for gallowlist.sh script.
@@ -68,10 +69,20 @@ reject_line_v6="${reject_line_v4}"
 # Abort script on error (FYI: enabling will cause script to exit silently if mailer has no valid results)
 set -e
 
+if ! aggregateCIDR=$(which aggregateCIDR.pl) ; then
+    echo "fatal: unable to locate aggregateCIDR.pl"
+    echo "https://github.com/lquidfire/route-summarization"
+    exit 1
+fi
+
+if ! postmap=$(which postmap) ; then
+	echo "fatal: unable to locate postmap"
+	exit 1
+fi
+
 printf "Starting Postallow v$version ($lastupdated)\n"
 
 # Check for passed config file
-#config_file="/etc/postallow.conf"
 if [ -n "$1" ]; then
 	config_file="$1"
 elif [ -f "/etc/postallow.conf" ]; then
@@ -292,78 +303,30 @@ if [ x"$enable_blocklist" = x"yes" ] ; then
 	done
 fi
 
-# If enabled, simplify (remove) any individual IPs already included in CIDR ranges (disabled by default)
-if [ x"$simplify" = x"yes" ]; then
-	printf "\nSimplifying allowlist IP addresses already included in CIDR ranges. These calculations\n"
-	printf "can take a LONG time if you have many mailers selected. Please be patient..."
-	
-	sed '/\./s/\/32//g' "${tmp1}" | sort -u | "${spftoolspath}"/simplify.sh > "${tmp2}" &
-	show_dots "$!"
+printf "\nCIDR and Host summarization...\n"
+# the depends on https://github.com/nabbi/route-summarization with symlink in system PATH
+# invalid hosts are also screened and removed
+sed '/\./s/\/32//g' "${tmp1}" | sort -u | ${aggregateCIDR} --quiet --spf > "${tmp2}" &
+show_dots "$!"
 
-	if [ x"$enable_blocklist" = x"yes" ] ; then
-		printf "\nSimplifying blocklist IP addresses already included in CIDR ranges. These calculations\n"
-			printf "can take a LONG time if you have many mailers selected. Please be patient..."
-			cat "${blktmp1}" | sort -u | "${spftoolspath}"/simplify.sh > "${blktmp2}" &
-			show_dots "$!"
-	fi
-	
-	printf "\nIP address simplification complete.\n"
-else
-	sed '/\./s/\/32//g' "${tmp1}" > "${tmp2}"
-	if [ x"$enable_blocklist" = x"yes" ] ; then
-		cat "${blktmp1}" > "${blktmp2}"
-	fi
+if [ x"$enable_denylist" = x"yes" ] ; then
+        cat "${denytmp1}" | sort -u | ${aggregateCIDR} --quiet --spf > "${denytmp2}" &
+        show_dots "$!"
 fi
 
-# Check for invalid IPv4 CIDRs, then format the allowlist
+#Format the lists
+printf "\nFormatting allowlist IPv4 CIDRs...\n"
+cat "${tmp2}" | while read ip; do
+keep_invalid_ip "$ip" "permit"
+done >> "${tmp3}" &
+show_dots "$!"
 
-# If enabled, fix invalid CIDRs
-if [ x"$invalid_ip4" = x"fix" ] ; then
-	printf "\nFixing invalid allowlist IPv4 CIDRs..."
-	cat "${tmp2}" | while read ip; do
-		fix_invalid_ip "$ip" "permit"
-	done >> "${tmp3}" &
+if [ x"$enable_blocklist" = x"yes" ] ; then
+	printf "\nFormatting blocklist IPv4 CIDRs...\n"
+	cat "${blktmp2}" | while read ip; do
+		keep_invalid_ip "$ip" "reject"
+	done >> "${blktmp3}" &
 	show_dots "$!"
-
-	if [ x"$enable_blocklist" = x"yes" ] ; then
-		printf "\nFixing invalid blocklist IPv4 CIDRs..."
-		cat "${blktmp2}" | while read ip; do
-			fix_invalid_ip "$ip" "reject"
-		done >> "${blktmp3}" &
-			show_dots "$!"
-	fi
-
-# If enabled, remove invalid CIDRs
-elif [ x"$invalid_ip4" = x"remove" ] ; then
-	printf "\nRemoving invalid IPv4 CIDRs from allowlist..."
-	cat "${tmp2}" | while read ip; do
-		remove_invalid_ip "$ip" "permit"
-	done >> "${tmp3}" &
-	show_dots "$!"
-
-	if [ x"$enable_blocklist" = x"yes" ] ; then
-		printf "\nRemoving invalid IPv4 CIDRs from blocklist..."
-		cat "${blktmp2}" | while read ip; do
-			remove_invalid_ip "$ip" "reject"
-		done >> "${blktmp3}" &
-		show_dots "$!"
-	fi
-
-# If enabled, keep invalid CIDRs
-elif [ x"$invalid_ip4" = x"keep" ] ; then
-	printf "\nKeeping invalid allowlist IPv4 CIDRs...\n"
-	cat "${tmp2}" | while read ip; do
-		keep_invalid_ip "$ip" "permit"
-	done >> "${tmp3}" &
-	show_dots "$!"
-
-	if [ x"$enable_blocklist" = x"yes" ] ; then
-		printf "\nKeeping invalid blocklist IPv4 CIDRs...\n"
-		cat "${blktmp2}" | while read ip; do
-			keep_invalid_ip "$ip" "reject"
-		done >> "${blktmp3}" &
-		show_dots "$!"
-	fi
 fi
 
 # Sort, uniq, and count final rules

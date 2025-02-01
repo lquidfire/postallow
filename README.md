@@ -14,8 +14,15 @@ If all of the allowlist mailers are selected when Postallow runs, the resulting 
 By default, Postallow has blocklisting turned off. Most users will not need to ever turn it on, but it's there if you *really* believe you need it. If you choose to enable it, make sure you understand the implications of blocklisting IP addresses based on their hostnames and associated mailers, and re-run Postallow often via cron to make sure you're not inadvertently blocking legitimate senders.
 
 # Requirements
-Postallow runs as a shell script (```/bin/sh```) and relies on two scripts from the <a target="_blank" 
-href="https://github.com/spf-tools/spf-tools">SPF-Tools</a> project (**despf.sh** and **simplify.sh**) to help recursively query SPF records. I recommend cloning or copying the entire SPF-Tools repo to a ```/usr/local/scripts/```directory on your system, then confirming the ```spftoolspath``` value in ```postallow```.
+Postallow runs as a shell script (```/bin/sh```) and relies on a script from the <a target="_blank" 
+href="https://github.com/spf-tools/spf-tools">SPF-Tools</a> project (**despf.sh**) to help recursively query SPF records. I recommend cloning or copying the entire SPF-Tools repo to a ```/usr/local/scripts/```directory on your system, then confirming the ```spftoolspath``` value in ```postallow```.
+
+In order to run `postallow` you will need:
+
+* A shell
+* Perl
+* Perl's [Net::CIDR:Lite](https://metacpan.org/pod/Net::CIDR::Lite)
+* Postfix
 
 **Please update SPF-Tools whenever you update Postallow, as both are under continuous development, and sometimes new features of Postallow depend upon an updated version of SPF-Tools.**
 
@@ -139,9 +146,6 @@ The ```yahoo_static_hosts.txt``` file can be periodically updated by running the
 ## Blocklisting
 To enable blocklisting, set ```enable_blocklist=yes``` and then list blocklisted hosts in ```blocklist_hosts```. Please refer to the blocklisting warning above. Blocklisting is not the primary purpose of Postallow, and most users will never need to turn it on.
 
-## Simplify
-By default, the option to simplify (remove) invididual IP addresses that are already included in CIDR ranges (handled by the SPT-Tools ```simplify.sh``` script) is set to **no**. Turning this feature on when building a allowlist for more than just a few mailers *dramatically* adds to the processing time required to run Postallow. Feel free to turn it on to see how it affects the amount of time required to build your allowlist, but if you're allowlisting more than just 3 or 4 mailers, you'll probably want to turn it to "no" again. Having a handful of individual IP addresses in your allowlist that might be redundantly covered by CIDR ranges won't have any appreciable impact on Postscreen's performance.
-
 ## Invalid hosts
 You can also choose how to handle malformed or invalid CIDR ranges that appear in the mailers' SPF records (which happens more often than it should). The options are:
 
@@ -152,6 +156,8 @@ You can also choose how to handle malformed or invalid CIDR ranges that appear i
 Other options in ```postallow.conf``` include changing the filenames for your allowlist & blocklist, Postfix path, SPF-Tools path, and whether or not to automatically reload Postfix after you've generated a new list.
 
 # Credits
+
+By the original author:
 * Special thanks to Mike Miller for his 2013 <a target="_blank" href="https://archive.mgm51.com/sources/gallowlist.html">gallowlist script</a> that initially got me tinkering with SPF-based Postscreen allowlists. The temp file creation and ```printf``` statement near the end of the Postallow script are remnants of his original script.
 * Thanks to Jan Sarenik (author of <a target="_blank" href="https://github.com/jsarenik/spf-tools">SPF-Tools</a>).
 * Thanks to <a target="_blank" href="https://github.com/jcbf">Jose Borges Ferreira</a> for patches and contributions to Postallow, include internal code to validate CIDRs.
@@ -164,13 +170,8 @@ A blog post by the original author discussing how Postallow came to be is here:
 
 http://www.stevejenkins.com/blog/2015/11/postscreen-allowlisting-smtp-outbound-ip-addresses-large-webmail-providers/
 
-# Known Issues
-* I have no way of validating IPv6 CIDRs yet. For now, the script assumes all SPF-published IPv6 CIDRs are valid and includes them in the allowlist.
-
-* I've improved the sorting by doing the ```uniq``` separately, after the sort. ```sort -u -V``` is still ideal, but it the ```-V``` option doesn't exist on all platforms (OSX doesn't support it, for example). For now, I can live with the two-step ```sort``` and ```uniq```, even though the final output splits the IPv6 address into two grips: those that start with letters and numbers (2a00, 2a01, etc.) at the top, and those that start with numbers only (2001, 2004, etc.) at the bottom. All the IPv4 addresses in the middle are sorted properly. See the `/testdata/` folder for examples of different sorting attempts or to play around with your own attempts at sorting. If you have any suggestions to improve the sorting without losing any data, I'm all ears!
-
 # Suggestions for Additional Mailers
-If you're a Postfix admin who sees a good number of ```PASS OLD``` entries for Postscreen in your mail logs, and have a suggestion for an additional mail host that might be a good candidate to include in Postallow, please comment on this issue: https://github.com/stevejenkins/postallow/issues/2
+If you're a Postfix admin who sees a good number of ```PASS OLD``` entries for Postscreen in your mail logs, and have a suggestion for an additional mail host that might be a good candidate to include in Postallow, please open an issue for the host(s) to be added to `postallow`.
 
 # Disclaimer
 You are totally responsible for anything this script does to your system. You're on your own. :)
