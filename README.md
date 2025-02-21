@@ -21,8 +21,9 @@ In order to run `postallow` you will need:
 
 * A shell
 * Perl
-* Perl's [Net::CIDR:Lite](https://metacpan.org/pod/Net::CIDR::Lite)
 * Postfix
+* [spf-tools](https://github.com/spf-tools/spf-tools)
+* [route-summarization](https://github.com/lquidfire/route-summarization)
 
 **Please update SPF-Tools whenever you update Postallow, as both are under continuous development, and sometimes new features of Postallow depend upon an updated version of SPF-Tools.**
 
