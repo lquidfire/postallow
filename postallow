@@ -75,9 +75,11 @@ if ! aggregateCIDR=$(which aggregateCIDR.pl) ; then
     exit 1
 fi
 
-if ! postmap=$(which postmap) ; then
-	echo "fatal: unable to locate postmap"
-	exit 1
+if [ x"$reload_postfix" = x"yes" ] ; then
+	if ! postmap=$(which postmap) ; then
+		echo "fatal: unable to locate postmap"
+		exit 1
+	fi
 fi
 
 printf "Starting Postallow v$version ($lastupdated)\n"
