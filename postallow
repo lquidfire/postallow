@@ -255,20 +255,10 @@ keep_invalid_ip() {
 
 printf "\nRecursively querying SPF records of selected allowlist mailers...\n"
 
-# Query selected mailers
+printf "\nQuerying email hosts...\n"
 
-printf "\nQuerying webmail hosts...\n"
-
-for h in ${webmail_hosts}; do
+for h in ${email_hosts}; do
 	query_host "${h}"
-done
-
-# Query Yahoo
-
-printf "\nQuerying Yahoo hosts...\n"
-
-for h in ${yahoo_hosts}; do
-	query_yahoo_host "${h}"
 done
 
 printf "\nQuerying social network hosts...\n"

@@ -1,0 +1,24 @@
+# CUSTOM HOSTS CAN BE ADDED HERE
+
+custom_hosts=""
+
+# A FEW COMMON HOSTS
+# If you think hosts should be added or removed, feel free to send a PR
+
+email_hosts="aol.com fastmail.com google.com gmx.com hotmail.com icloud.com \
+	inbox.com mail.com microsoft.com migado.com outlook.com \
+	secure-mailgate.com tutanota.com zoho.com \
+	_spf.protonmail.ch _spf1.yahoo.com _spf2.yahoo.com _spf3.yahoo.com"
+
+social_hosts="facebook.com facebookmail.com instagram.com linkedin.com \
+	pinterest.com reddit.com tumblr.com tiktok.com x.com"
+
+commerce_hosts="amazon.com craigslist.org ebay.com paypal.com"
+
+bulk_hosts="amazonses.com authsmtp.com brevo.com constantcontact.com \
+	cust-spf.exacttarget.com exacttarget.com fbmta.com fishbowl.com \
+	icontact.com mailchimp.com mailgun.com mailjet.com messagelabs.com \
+	messagegears.net mtasv.net sendgrid.com sendgrid.net sparkpost.com \
+	sparkpostmail.com"
+
+misc_hosts="codeberg.org github.com gitlab.com sr.ht zendesk.com"
