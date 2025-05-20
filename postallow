@@ -36,30 +36,6 @@ lastupdated="1 February 2025"
 #
 #################################################################
 
-# DEFAULT HOSTS
-# CUSTOM HOSTS CAN BE ADDED IN /etc/postallow.conf
-
-# Hosts to query
-webmail_hosts="aol.com fastmail.com google.com gmx.com hotmail.com icloud.com \
-	inbox.com mail.com microsoft.com outlook.com protonmail.com \
-	secure-mailgate.com tutanota.com zoho.com"
-
-# Yahoo hosts (as per 2025-01-29)
-yahoo_hosts="_spf1.yahoo.com _spf2.yahoo.com _spf3.yahoo.com"
-
-social_hosts="facebook.com facebookmail.com instagram.com linkedin.com \
-	pinterest.com reddit.com tumblr.com tiktok.com x.com"
-
-commerce_hosts="amazon.com craigslist.org ebay.com paypal.com"
-
-bulk_hosts="amazonses.com authsmtp.com brevo.com constantcontact.com \
-	cust-spf.exacttarget.com exacttarget.com fbmta.com fishbowl.com \
-	icontact.com mailchimp.com mailgun.com mailjet.com messagelabs.com \
-	messagegears.net mtasv.net sendgrid.com sendgrid.net sparkpost.com \
-	sparkpostmail.com"
-
-misc_hosts="codeberg.org github.com gitlab.com sr.ht zendesk.com"
-
 permit_line_v4="%s\tpermit\n"
 reject_line_v4="%s\treject\n"
 
