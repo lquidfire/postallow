@@ -1,0 +1,104 @@
+.\" A license should / could go here...
+.\"
+.TH POSTALLOW.CONF 5 "version 0.1" "April 2025"
+
+.SH NAME
+postallow.conf \- The configuration file for \fBPostallow\fR(1)
+
+.SH DESCRIPTION
+The file \fIpostallow.conf\fR contains the default settings for 
+\fBPostallow\fR(1), a script that generates an allowlist for Postfix's 
+Postscreen (8), based on large senders' SPF records.  When a configuration file 
+\fIpostallow.conf\fR is given on the command line, 
+\fBPostallow\fR reads the specified file for setting its options and file 
+locations.  Without that option, \fBPostallow\fR tries to find the 
+configuration file in the following locations: either \fI/etc/postallow.conf\fR 
+, or \fI/etc/postallow/postallow.conf\fR , or 
+\fI/usr/local/etc/postallow.conf\fR , or 
+\fI/usr/local/etc/postallow/postallow.conf\fR .
+
+.SH FILE LOCATION OPTIONS
+.PP
+A number of important file locations have to be set so that \fBPostallow\fR 
+knows where to read and write certain information.
+.PP
+\fBallowlist_hosts\fR = \fI<path>\fR
+.RS 4
+This file contains a list of domains that should be allowlisted by Postallow.\&
+.PP
+.RE
+\fBspftoolspath\fR = \fI<path>\fR
+.RS 4
+The location of the SPFTools (a dependency for \fBPostallow\fR).\&
+.PP
+.RE
+\fBpostfixbinarypath\fR = \fI<path>\fR
+.RS 4
+The location of the Postfix binary (for restarting Postfix after 
+\fBPostallow\fR has installed a new list of IP addresses of mailers that should 
+be allowlisted by Postscreen (8) - see below ).\&
+.PP
+.RE
+\fBpostfixpath\fR = \fI<path>\fR
+.RS 4
+The directory where \fBPostallow\fR should install the newly created 
+allowlist (and blocklist, if enabled), to be used by Postfix.\&
+.PP
+.RE
+\fBallowlist\fR = \fI<file name>\fR
+.RS 4
+The name of the allowlist as created by \fBPostallow\fR. This file will be 
+placed in the above-mentioned directory.\&
+.PP
+.RE
+\fBblocklist\fR = \fI<path>\fR
+.RS 4
+The name of the blocklist as created by \fBPostallow\fR. This file will be 
+placed in the above-mentioned directory.\&
+.PP
+.RE
+\fByahoo_static_hosts\fR = \fI<path>\fR
+.RS 4
+The location of the file yahoo_static_hosts.txt that is shipped with this 
+version of \fBPostallow\fR.\&
+.PP
+
+.SH OTHER OPTIONS
+.PP
+A few more configuration options must be set here.
+.PP
+\fBinclude_yahoo\fR = \fIyes\fR|\fIno\fR
+.RS 4
+A static list of IP addresses, pulled from 
+https://senders.yahooinc.com/outbound-mail-servers/, is included in this 
+version of \fBPostallow\fR. This list includes, in fact, the IP addresses for 
+mail senders of Yahoo, Verizon, and AOL. It is no longer necessary to use this 
+static file, as those IP addresses are now pulled in via the SPF records. This 
+file is still shipped with this version of \fBPostallow\fR in case the SPF 
+records give trouble again.
+.PP
+.RE
+\fBenable_blocklist\fR = \fIyes\fR|\fIno\fR
+.RS 4
+Enable this option if you want \fBPostallow\fR to also generate a list of 
+mailers that should be blocked by Postscreen (8). The names of domains that you 
+want to be blocked should go into the file \fIblocklist_hosts\fR.\&
+.PP
+.RE
+\fBreload_postfix\fR = \fIyes\fR|\fIno\fR
+.RS 4
+After \fBPostallow\fR has installed the allow list (and block list, if 
+enabled), it can restart Postfix (1) automatically for the changes to take 
+effect immediately.\&
+.PP
+
+.SH SEE ALSO
+.PP
+\fBpostallow\fR(1)
+.PP
+.SH AUTHORS
+.PP
+\fBPostallow\fR was originally created by Steve Jenkins as Postwhite, and is 
+since 2025 maintained and developped as Postallow by Edmund Lodewijks.\& For 
+more information about \fBPostallow\fR(1) , see 
+\fIhttps://github.com/lquidfire/postallow/\fR.\&

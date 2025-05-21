@@ -1,6 +1,8 @@
 MIT License
 
-Copyright (c) 2025 Edmund Lodewijks
+Copyright (c) 2017 Jenkins Holdings LLC  -- up to version 3.4 (Original author)
+
+Copyright (c) 2025 Edmund Lodewijks -- from version 3.5.0
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -1,0 +1,4 @@
+# CUSTOM HOSTS CAN BE ADDED HERE
+
+# Enter hosts in the form of "gmail.com hotmail.com yahoo.com"
+blocklist_hosts=""
