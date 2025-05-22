@@ -15,19 +15,18 @@ By default, Postallow has blocklisting turned off. Most users will not need to e
 
 # Requirements
 Postallow runs as a shell script (```/bin/sh```) and relies on a script from the <a target="_blank" 
-href="https://github.com/spf-tools/spf-tools">SPF-Tools</a> project (**despf.sh**) to help recursively query SPF records. I recommend cloning or copying the entire SPF-Tools repo to a ```/usr/local/scripts/```directory on your system, then confirming the ```spftoolspath``` value in ```postallow```.
+href="https://github.com/spf-tools/spf-tools">SPF-Tools</a> project (**despf.sh**) to help recursively query SPF records. I recommend cloning or copying the entire SPF-Tools repo to a ```/usr/local/scripts/```directory on your system, then confirming the ```spftoolspath``` value in ```postallow.conf```.
 
 In order to run `postallow` you will need:
 
 * A shell
 * Perl
-* Postfix
 * [spf-tools](https://github.com/spf-tools/spf-tools)
 * [route-summarization](https://github.com/lquidfire/route-summarization)
 
 **Please update SPF-Tools whenever you update Postallow, as both are under continuous development, and sometimes new features of Postallow depend upon an updated version of SPF-Tools.**
 
-Postallow also assumes that you have **Postfix** and the appropriate **bind-utils** package for your Linux / Unix(-y) system installed on your system.
+Postallow also assumes that you have **Postfix** and the appropriate **bind-utils** package for your Linux / Unix(-y) system installed on your system. If you don't have Postfix installed, please select so in the file ```postallow.conf```.
 
 # Usage
 
@@ -35,8 +34,8 @@ Postallow also assumes that you have **Postfix** and the appropriate **bind-util
 
 1. Make sure you have <a target="_blank" href="https://github.com/spf-tools/spf-tools">SPF-Tools</a> on your system
 2. Move the ```postallow.conf``` file to your `/etc/` directory
-3. Add any custom hosts in ```postallow.conf```
-4. Run ```/usr/local/scripts/postallow``` from the command line.
+3. Add any custom hosts to the file ```allowlist_hosts```
+4. Run ```/usr/local/scripts/postallow``` (or whereever the script is installed on your system) from the command line.
 
 You can optionally provide a configuration file via the command line which will override the default configuration file:
 
@@ -66,7 +65,7 @@ Add the filename of your allowlist (and optionally your blocklist) to the ```pos
 
 Then do a manual ```postfix reload``` or re-run ```/usr/local/scripts/postallow``` to build a fresh allowlist and automatically reload Postfix.
 
-## Alternative: Non-root user
+## Alternative: Non-root user (needs testing)
 
 1. Make sure you have <a target="_blank" href="https://github.com/spf-tools/spf-tools">SPF-Tools</a> on your system
 2. Create a system group: `groupadd -r postallow`
@@ -111,16 +110,15 @@ Then do a manual ```postfix reload``` or re-run ```/usr/local/scripts/postallow`
 Options for Postallow are located in the ```postallow.conf``` file. This file shoud be moved to your system's ```/etc/``` directory before running Postallow for the first time.
 
 ## Custom Hosts
-By default, Postallow includes a number of well-known (and presumably trustworthy) mailers in six categories:
+By default, Postallow includes a number of well-known (and presumably trustworthy) mailers in five categories:
 
-* Webmailers
-* Yahoo Mail
+* e-mailers
 * Ecommerce
 * Social Networks
 * Bulk Senders
 * Miscellaneous
 
-To add your own additional custom hosts, add them to the ```custom_hosts``` section of ```/etc/postallow.conf``` separated by a single space:
+To add your own additional custom hosts, add them to the ```custom_hosts``` section of the file ```allowlist_hosts``` separated by a single space:
 
     custom_hosts="aol.com google.com microsoft.com"
 
@@ -129,7 +127,7 @@ Additional trusted mailers are added to the script from time to time, so check b
 ## Hosts that Don't Publish their Outbound Mailers via SPF Records
 Because Postallow relies on published SPF records to build its allowlist, mailers who refuse to publish outbound mailer IP addresses via SPF are problematic.
 
-For smaller mailhosts without SPF-published mailer lists, the included `query_host_ovh` file is a working example of a script that queries a range of hostnames for a specific mailer (`mail-out.ovh.net` in the included example), collects valid IP addresses, and includes them in a custom allowlist. The new custom allowlist may then be included in as an additional entry in your Postfix's `postscreen_access_list` parameter (see **Usage** above). An example of the `query_host_ovh` file's output is included in the `/examples/` folder as `postscreen_ovh_allowlist.cidr`.
+For smaller mailhosts without SPF-published mailer lists, the included `query_host_ovh` file is a working example of a script that queries a range of hostnames for a specific mailer (`mail-out.ovh.net` in the included example), collects valid IP addresses, and includes them in a custom allowlist. The new custom allowlist may then be included in as an additional entry in your Postfix's `postscreen_access_list` parameter (see **Usage** above).
 
 To create additional customised query scripts for mailers that don't publish outbound IPs via SPF, copy the example `query_host_ovh` file to a new unique filename, edit the script's mailhost and numerical range values as required, set a unique output file (`/etc/postfix/postscreen_*_allowlist.cidr`), include the output file in Postfix's `postscreen_access_list` parameter, then configure cron to run the new query script periodically.
 
@@ -138,7 +136,7 @@ Depending on the size of the range you wish to query, this script could take a l
 ## Yahoo! Hosts
 The netblocks for Yahoo! are only to be found on their own nameservers, and manual checking of the querying mechanism is required every now and then.
 
-Yahoo also publishes a list of outbound IP addresses [on their website](https://senders.yahooinc.com/outbound-mail-servers/). However, that list does not correspond 100% to the IP addresses obtained from their SPF records via their own nameservers.. Therefore, Postallow offers both a dynamic list of Yahoo mailers, built from the records obtained from their Nameservers, as well as the option to scrape Yahoo's website and add those IP addresses as well.
+Yahoo also publishes a list of outbound IP addresses [on their website](https://senders.yahooinc.com/outbound-mail-servers/). However, that list does not correspond 100% to the IP addresses obtained from their SPF records via their own nameservers (it would appear that the list on their website shows IP addresses for Yahoo!, Verizon, and AOL). Therefore, Postallow offers both a dynamic list of Yahoo mailers, built from the records obtained from their Nameservers, as well as the option to scrape Yahoo's website and add those IP addresses as well.
 
 A list of Yahoo! outbound IP addresses, based on the linked knowledgebase article and formatted for Postallow, is included as ```yahoo_static_hosts.txt```. By default, the contents of this file are added to the final allowlist. To disable these particular Yahoo! IPs from being included in your allowlist, set the ```include_yahoo``` configuration option in ```/etc/postallow.conf``` to ```include_yahoo="no"```.
 
