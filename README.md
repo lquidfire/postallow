@@ -136,7 +136,7 @@ Depending on the size of the range you wish to query, this script could take a l
 ## Yahoo! Hosts
 The netblocks for Yahoo! are only to be found on their own nameservers, and manual checking of the querying mechanism is required every now and then.
 
-Yahoo also publishes a list of outbound IP addresses [on their website](https://senders.yahooinc.com/outbound-mail-servers/). However, that list does not correspond 100% to the IP addresses obtained from their SPF records via their own nameservers (it would appear that the list on their website shows IP addresses for Yahoo!, Verizon, and AOL). Therefore, Postallow offers both a dynamic list of Yahoo mailers, built from the records obtained from their Nameservers, as well as the option to scrape Yahoo's website and add those IP addresses as well.
+Yahoo also publishes a list of outbound IP addresses [on its website](https://senders.yahooinc.com/outbound-mail-servers/). However, that list does not correspond 100% to the IP addresses obtained from their SPF records via their own nameservers (it would appear that the list on their website shows IP addresses for Yahoo!, Verizon, and AOL). Therefore, Postallow offers both a dynamic list of Yahoo mailers, built from the records obtained from their Nameservers, as well as the option to scrape Yahoo's website and add those IP addresses as well.
 
 A list of Yahoo! outbound IP addresses, based on the linked knowledgebase article and formatted for Postallow, is included as ```yahoo_static_hosts.txt```. By default, the contents of this file are added to the final allowlist. To disable these particular Yahoo! IPs from being included in your allowlist, set the ```include_yahoo``` configuration option in ```/etc/postallow.conf``` to ```include_yahoo="no"```.
 
