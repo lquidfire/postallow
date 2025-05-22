@@ -2,17 +2,18 @@
 
 #########################################################################
 # Scrape Yahoo! - Generates a list of Yahoo! Outbound IPs for Postallow #
-# https://github.com/stevejenkins/postallow                             #
+# https://github.com/lquidfire/postallow                                #
 #########################################################################
 
 # By Steve Cook (https://www.stevecook.net/)
 # and Steve Jenkins (https://www.stevejenkins.com/)
 # Updated in 2025 by Edmund Lodewijks
 
-version="1.1"
-lastupdated="29 January 2025"
+version="1.2"
+lastupdated="22 May 2025"
 
-# Verizon, AOL and Yahoo servers have allegedly merged.
+# Verizon, AOL and Yahoo servers have allegedly merged, and the scraped
+# IP addresses are for all their outgoing mail servers..
 yahoo_url="https://senders.yahooinc.com/outbound-mail-servers/"
 
 # NO NEED TO EDIT PAST THIS LINE
@@ -33,8 +34,14 @@ printf "Scraping Yahoo! outbound IP addresses...\n"
 # Check for passed config file
 if [ -n "$1" ]; then
         config_file="$1"
-else
-        config_file="/etc/postallow.conf"
+elif [ -f "/etc/postallow.conf" ]; then
+    config_file="/etc/postallow.conf"
+elif [ -f "/etc/postallow/postallow.conf" ]; then
+    config_file="/etc/postallow/postallow.conf"
+elif [ -f "/usr/local/etc/postallow.conf" ]; then
+    config_file="/usr/local/etc/postallow.conf"
+elif [ -f "/usr/local/etc/postallow/postallow.conf" ]; then
+    config_file="/usr/local/etc/postallow/postallow.conf"
 fi
 
 # Read config file options   
