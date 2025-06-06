@@ -6,7 +6,7 @@ custom_hosts=""
 # If you think hosts should be added or removed, feel free to send a PR
 
 email_hosts="aol.com fastmail.com google.com gmx.com hotmail.com icloud.com \
-	inbox.com mail.com microsoft.com migado.com outlook.com \
+	inbox.com mail.com microsoft.com migadu.com outlook.com \
 	secure-mailgate.com tutanota.com zoho.com \
 	_spf.protonmail.ch _spf1.yahoo.com _spf2.yahoo.com _spf3.yahoo.com"
 
