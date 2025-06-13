@@ -351,6 +351,56 @@ cleanup() {
 }
 cleanup
 
+# Extract all domains from the allowlist, format them from Rspamd, and add them to the ARC configuration file whitelisted_signers_map
+#
+# 0. ONLY run this if enabled in the configuration file
+# 1. Check if a filename was provided in the configuration file
+# 2. If no file was proviced, check if default file exists
+# 3. Run the script and output it.
+# 4. Make use of temp files and move above temp file cleanup
+#
+# The function to extract the domain names:
+extract_domains_line() {
+  local input_file="$1"
+
+  # Check if the input file exists
+  if [[ ! -f "$input_file" ]]; then
+    echo "Error: File not found: $input_file"
+    exit 1
+  fi
+
+  # Process the file and write to domains_line.txt
+  awk '
+    BEGIN { ORS = " " }
+    /="/ {
+      gsub(/.*="/, "")
+      inlist = 1
+    }
+    inlist {
+      gsub(/\\/, "")
+      printf "%s", $0
+    }
+    /"/ {
+      gsub(/".*/, "")
+      print ""
+      inlist = 0
+    }
+  ' "$input_file" |
+  tr ' ' '\n' |
+  sed -E '
+    s/^[[:space:]]+//;
+    s/[[:space:]]+$//;
+    s/"$//
+  ' |
+  grep -vE '^$|^_' |
+  awk '{ printf "\"%s\", ", $0 }' |
+  sed 's/, $//' > domains_line.txt
+
+  # Add a final newline
+  echo >> domains_line.txtV
+
+}
+
 # Reload Postfix to pick up changes in allowlist
 if [ x"$reload_postfix" = x"yes" ]; then
 printf '\nReloading Postfix configuration to refresh rules...\n'
